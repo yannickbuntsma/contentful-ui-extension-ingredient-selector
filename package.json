@@ -1,0 +1,27 @@
+{
+  "name": "contentful-ui-extension-ingredient-selector",
+  "version": "1.0.0",
+  "description": "Contentful UI extension to create a list of ingredients",
+  "main": "index.html",
+  "engines": {
+    "node": ">=7.6"
+  },
+  "scripts": {
+    "create": "contentful-extension create --space-id ${SPACE_ID}",
+    "update": "contentful-extension update --space-id ${SPACE_ID} --force"
+  },
+  "repository": "https://github.com/yannickbuntsma/contentful-ui-extension-ingredient-selector.git",
+  "keywords": [
+    "contentful"
+  ],
+  "author": "yannickbuntsma@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yannickbuntsma/contentful-ui-extension-ingredient-selector/issues"
+  },
+  "homepage": "https://github.com/yannickbuntsma/contentful-ui-extension-ingredient-selector#readme",
+  "devDependencies": {
+    "contentful-extension-cli": "^2.0.0"
+  },
+  "private": false
+}

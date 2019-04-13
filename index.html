@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Contentful UI extension country select</title>
+    <link
+      rel="stylesheet"
+      href="https://contentful.github.io/ui-extensions-sdk/cf-extension.css"
+    />
+    <script src="https://contentful.github.io/ui-extensions-sdk/cf-extension-api.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div id="content"></div>
+      <button class="cf-btn-primary btn--add-ingredient">Add ingredient</button>
+    </div>
+    <script type="text/javascript">
+      const getInitialValues = () => {
+        return {
+          0: {
+            amount: 0,
+            unit: unitOptions[0],
+            name: '',
+          },
+        }
+      }
+
+      const unitOptions = [
+        { label: 'tl', value: 'tsp' },
+        { label: 'el', value: 'tbsp' },
+        { label: 'ml', value: 'ml' },
+        { label: 'L', value: 'l' },
+        { label: 'g', value: 'g' },
+        { label: 'kg', value: 'kg' },
+        { label: 'stuk(s)', value: 'pieces' },
+        { label: 'snufje', value: 'pinch' },
+      ]
+
+      const getId = (event) => event.target.dataset.id
+
+      const removeElement = (id) => {
+        const group = document.querySelector(`.input-group[data-id="${id}"]`)
+        group.parentNode.removeChild(group)
+      }
+
+      const removeIngredient = (ingredientValues, ingredientId) => {
+        delete ingredientValues[ingredientId]
+        removeElement(ingredientId)
+      }
+
+      const createAmount = (ingredientId, value = '0') => {
+        const element = document.createElement('input')
+        element.type = 'number'
+        element.dataset.id = ingredientId
+        element.dataset.key = 'amount'
+        element.className = 'cf-form-input cf-ingredient-amount'
+        element.value = value
+
+        return element
+      }
+
+      const createUnit = (ingredientId, options, initialValue) => {
+        const select = document.createElement('select')
+        select.dataset.id = ingredientId
+        select.dataset.key = 'unit'
+        select.className = 'cf-form-input cf-ingredient-unit'
+
+        options.forEach(({ label, value }) => {
+          const option = document.createElement('option')
+          option.text = label
+          option.value = value
+          select.appendChild(option)
+        })
+
+        select.value = initialValue
+
+        return select
+      }
+
+      const createName = (ingredientId, value = '') => {
+        const element = document.createElement('input')
+        element.type = 'text'
+        element.dataset.id = ingredientId
+        element.dataset.key = 'name'
+        element.className = 'cf-form-input cf-ingredient-name'
+        element.value = value
+
+        return element
+      }
+
+      const createDeleteButton = (ingredientId) => {
+        const element = document.createElement('button')
+        element.type = 'button'
+        element.textContent = 'Remove'
+        element.dataset.id = ingredientId
+        element.className = 'cf-btn-primary btn--remove-ingredient'
+
+        return element
+      }
+
+      const createIngredientInputGroup = (
+        ingredientId,
+        ingredientAmount,
+        ingredientUnit,
+        ingredientName
+      ) => {
+        const group = document.createElement('div')
+        group.className = 'input-group'
+        group.dataset.id = ingredientId
+
+        const elements = [
+          createAmount(ingredientId, ingredientAmount),
+          createUnit(ingredientId, unitOptions, ingredientUnit),
+          createName(ingredientId, ingredientName),
+          createDeleteButton(ingredientId),
+        ]
+
+        elements.forEach((el) => {
+          group.appendChild(el)
+        })
+
+        const target = document.querySelector('#content')
+        target.appendChild(group)
+      }
+
+      window.contentfulExtension.init((extension) => {
+        let ingredientValues = extension.field.getValue()
+        if (!ingredientValues) {
+          ingredientValues = getInitialValues()
+
+          const firstId = Object.keys(ingredientValues)[0]
+          // const { amount, unit, name } = ingredientValues[firstId]
+
+          createIngredientInputGroup(firstId)
+        } else {
+          Object.entries(ingredientValues).forEach(([id, ingObject]) => {
+            const { amount, name, unit } = ingObject
+            createIngredientInputGroup(id, amount, unit, name)
+          })
+        }
+
+        window.addEventListener('change', (event) => {
+          const {
+            value,
+            dataset: { id, key },
+          } = event.target
+
+          ingredientValues = {
+            ...ingredientValues,
+            [id]: {
+              ...ingredientValues[id],
+              [key]: value,
+            },
+          }
+
+          extension.field.setValue(ingredientValues)
+        })
+
+        window.addEventListener('click', (event) => {
+          if (event.target.classList.contains('btn--add-ingredient')) {
+            const id = Object.keys(ingredientValues).length
+            createIngredientInputGroup(id)
+          }
+
+          if (event.target.classList.contains('btn--remove-ingredient')) {
+            const id = getId(event)
+            removeIngredient(ingredientValues, id)
+            extension.field.setValue(ingredientValues)
+          }
+        })
+      })
+    </script>
+  </body>
+  <style>
+    .input-group {
+      display: flex;
+    }
+
+    .input-group + .input-group {
+      margin-top: 0.5rem;
+    }
+
+    .cf-form-input + .cf-form-input {
+      margin-left: 1rem;
+    }
+
+    .cf-ingredient-amount {
+      max-width: 4rem;
+    }
+
+    .btn--add-ingredient {
+      margin-top: 1rem;
+    }
+
+    .btn--remove-ingredient {
+      margin-left: 1rem;
+    }
+  </style>
+</html>

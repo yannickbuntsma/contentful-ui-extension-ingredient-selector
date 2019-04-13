@@ -1,0 +1,6 @@
+{
+  "name": "Contentful UI extension - Ingredient selector",
+  "id": "cf-contentful-ui-ingredient-selector",
+  "fieldTypes": ["Object"],
+  "srcdoc": "./index.html"
+}
