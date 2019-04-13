@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Contentful UI extension country select</title>
-    <link
-      rel="stylesheet"
-      href="https://contentful.github.io/ui-extensions-sdk/cf-extension.css"
-    />
+    <link rel="stylesheet" href="https://contentful.github.io/ui-extensions-sdk/cf-extension.css" />
     <script src="https://contentful.github.io/ui-extensions-sdk/cf-extension-api.js"></script>
   </head>
   <body>
@@ -15,6 +12,17 @@
       <button class="cf-btn-primary btn--add-ingredient">Add ingredient</button>
     </div>
     <script type="text/javascript">
+      const unitOptions = [
+        { label: 'tl', value: 'tsp' },
+        { label: 'el', value: 'tbsp' },
+        { label: 'ml', value: 'ml' },
+        { label: 'liter', value: 'l' },
+        { label: 'gram', value: 'g' },
+        { label: 'kilo', value: 'kg' },
+        { label: 'stuk(s)', value: 'pieces' },
+        { label: 'snufje', value: 'pinch' },
+      ]
+
       const getInitialValues = () => {
         return {
           0: {
@@ -24,17 +32,6 @@
           },
         }
       }
-
-      const unitOptions = [
-        { label: 'tl', value: 'tsp' },
-        { label: 'el', value: 'tbsp' },
-        { label: 'ml', value: 'ml' },
-        { label: 'L', value: 'l' },
-        { label: 'g', value: 'g' },
-        { label: 'kg', value: 'kg' },
-        { label: 'stuk(s)', value: 'pieces' },
-        { label: 'snufje', value: 'pinch' },
-      ]
 
       const getId = (event) => event.target.dataset.id
 

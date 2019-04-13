@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/yannickbuntsma/contentful-ui-extension-ingredient-selector#readme",
   "devDependencies": {
-    "contentful-extension-cli": "^2.0.0"
+    "contentful-extension-cli": "^2.0.0",
+    "prettier": "^1.17.0"
   },
   "private": false
 }
