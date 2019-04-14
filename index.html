@@ -20,18 +20,21 @@
         { label: 'gram', value: 'g' },
         { label: 'kilo', value: 'kg' },
         { label: 'stuk(s)', value: 'pieces' },
-        { label: 'snufje', value: 'pinch' },
+        { label: 'snufje(s)', value: 'pinch' },
       ]
 
-      const getInitialValues = () => {
-        return {
-          0: {
-            amount: 0,
-            unit: unitOptions[0],
-            name: '',
-          },
-        }
-      }
+      const createNewIngredient = (id) => ({
+        id: id.toString(),
+        amount: '',
+        unit: unitOptions[0].value,
+        name: '',
+      })
+
+      const getInitialValues = () => [
+        {
+          ...createNewIngredient(0),
+        },
+      ]
 
       const getId = (event) => event.target.dataset.id
 
@@ -41,8 +44,8 @@
       }
 
       const removeIngredient = (ingredientValues, ingredientId) => {
-        delete ingredientValues[ingredientId]
         removeElement(ingredientId)
+        return ingredientValues.filter((ingredient) => ingredient.id !== ingredientId)
       }
 
       const createAmount = (ingredientId, value = '0') => {
@@ -95,21 +98,17 @@
         return element
       }
 
-      const createIngredientInputGroup = (
-        ingredientId,
-        ingredientAmount,
-        ingredientUnit,
-        ingredientName
-      ) => {
+      const createIngredientInputGroup = (ingredient) => {
+        const { id, amount, unit, name } = ingredient
         const group = document.createElement('div')
         group.className = 'input-group'
-        group.dataset.id = ingredientId
+        group.dataset.id = id
 
         const elements = [
-          createAmount(ingredientId, ingredientAmount),
-          createUnit(ingredientId, unitOptions, ingredientUnit),
-          createName(ingredientId, ingredientName),
-          createDeleteButton(ingredientId),
+          createAmount(id, amount),
+          createUnit(id, unitOptions, unit),
+          createName(id, name),
+          createDeleteButton(id),
         ]
 
         elements.forEach((el) => {
@@ -121,18 +120,27 @@
       }
 
       window.contentfulExtension.init((extension) => {
-        let ingredientValues = extension.field.getValue()
-        if (!ingredientValues) {
+        const getValue = () => {
+          const value = extension.field.getValue()
+          console.log('Got value 👇')
+          console.log(value)
+          return value
+        }
+
+        const setValue = (value) => {
+          console.log('value', value)
+          extension.field.setValue(ingredientValues)
+        }
+
+        let ingredientValues = getValue()
+        if (!ingredientValues || !ingredientValues.length || ingredientValues.length === 0) {
           ingredientValues = getInitialValues()
 
-          const firstId = Object.keys(ingredientValues)[0]
-          // const { amount, unit, name } = ingredientValues[firstId]
-
-          createIngredientInputGroup(firstId)
+          const id = ingredientValues[0].id
+          createIngredientInputGroup(createNewIngredient(id))
         } else {
-          Object.entries(ingredientValues).forEach(([id, ingObject]) => {
-            const { amount, name, unit } = ingObject
-            createIngredientInputGroup(id, amount, unit, name)
+          ingredientValues.forEach(({ id, amount, unit, name }) => {
+            createIngredientInputGroup({ id, amount, unit, name })
           })
         }
 
@@ -141,28 +149,36 @@
             value,
             dataset: { id, key },
           } = event.target
+          const newValues = ingredientValues.map((item) => {
+            if (item.id === id) {
+              return {
+                ...item,
+                [key]: value,
+              }
+            } else {
+              return item
+            }
+          })
 
-          ingredientValues = {
-            ...ingredientValues,
-            [id]: {
-              ...ingredientValues[id],
-              [key]: value,
-            },
-          }
-
-          extension.field.setValue(ingredientValues)
+          ingredientValues = newValues
+          setValue(newValues)
         })
 
         window.addEventListener('click', (event) => {
           if (event.target.classList.contains('btn--add-ingredient')) {
-            const id = Object.keys(ingredientValues).length
-            createIngredientInputGroup(id)
+            const id = (parseFloat(ingredientValues[ingredientValues.length - 1].id) + 1).toString()
+            const newIngredient = createNewIngredient(id)
+            createIngredientInputGroup(newIngredient)
+            newIngredientValues = [...ingredientValues, newIngredient]
+            ingredientValues = newIngredientValues
+            setValue(ingredientValues)
           }
 
           if (event.target.classList.contains('btn--remove-ingredient')) {
             const id = getId(event)
-            removeIngredient(ingredientValues, id)
-            extension.field.setValue(ingredientValues)
+            const newIngredientValues = removeIngredient(ingredientValues, id)
+            ingredientValues = newIngredientValues
+            setValue(ingredientValues)
           }
         })
       })
