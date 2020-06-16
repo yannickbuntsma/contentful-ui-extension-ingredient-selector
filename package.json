@@ -8,7 +8,7 @@
   },
   "scripts": {
     "create": "contentful-extension create --space-id ${SPACE_ID}",
-    "update": "contentful-extension update --space-id ${SPACE_ID} --force"
+    "update": "node ./scripts/update.js"
   },
   "repository": "https://github.com/yannickbuntsma/contentful-ui-extension-ingredient-selector.git",
   "keywords": [
@@ -22,6 +22,7 @@
   "homepage": "https://github.com/yannickbuntsma/contentful-ui-extension-ingredient-selector#readme",
   "devDependencies": {
     "contentful-extension-cli": "^2.0.0",
+    "dotenv": "^8.2.0",
     "prettier": "^1.17.0"
   },
   "private": false

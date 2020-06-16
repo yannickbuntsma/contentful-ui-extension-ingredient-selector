@@ -20,7 +20,12 @@
         { label: 'gram', value: 'g' },
         { label: 'kilo', value: 'kg' },
         { label: 'stuk(s)', value: 'pieces' },
-        { label: 'snufje(s)', value: 'pinch' },
+        { label: 'snufje(s)', value: 'pinches' },
+        { label: 'handje(s)', value: 'hands' },
+        { label: 'teentje(s)', value: 'cloves' },
+        { label: 'zak(ken)', value: 'bags' },
+        { label: 'cm', value: 'cm' },
+        { label: 'naar smaak', value: 'to taste' },
       ]
 
       const createNewIngredient = (id) => ({
@@ -51,6 +56,7 @@
       const createAmount = (ingredientId, value = '0') => {
         const element = document.createElement('input')
         element.type = 'number'
+        element.step = '0.25'
         element.dataset.id = ingredientId
         element.dataset.key = 'amount'
         element.className = 'cf-form-input cf-ingredient-amount'
